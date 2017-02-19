@@ -380,7 +380,8 @@ def main():
     while (not game_over):
         # Display the Player's board so that they know how they are doing.
         if (turn == "A"):
-            print "\n\nThis is your board \n"
+            print "\n\nPLAYER A"
+            print "This is your board: \n"
             board_print(board_A)
 
             print "\nNow select the coordinate that you want to target on Player B's board.\n"
@@ -391,7 +392,6 @@ def main():
             valid = is_valid_target(board_A_targets, str(target))
  
             while (not valid):
-                # print "\nI am sorry, that spot is not a valid target. Try again.\n"
                 target = raw_input("\nWhat coordinate (x,y) would you like to fire at?: ")
                 valid = is_valid_target(board_A_targets, str(target))
 
@@ -403,10 +403,11 @@ def main():
             else:
                 turn = "B"
         else:
-            print "\n\nThis is your board \n"
+            print "\n\nPLAYER B"
+            print "This is your board \n"
             board_print(board_B)
 
-            print "\nNow select the coordinate that you want to target on Player B's board.\n"
+            print "\nNow select the coordinate that you want to target on Player A's board.\n"
             board_print(board_B_targets)
 
             target = raw_input("\nWhat coordinate (x,y) would you like to fire at?: ")
@@ -414,7 +415,6 @@ def main():
             valid = is_valid_target(board_B_targets, str(target))
  
             while (not valid):
-                # print "\nI am sorry, that spot is not a valid target. Try again.\n"
                 target = raw_input("\nWhat coordinate (x,y) would you like to fire at?: ")
                 valid = is_valid_target(board_B_targets, str(target))
 
@@ -426,7 +426,14 @@ def main():
             else:
                 turn = "A"
 
-    print "\n\nGAME OVER, Player " + winner + " has won!"
+    print "\n\n\n\nGAME OVER, Player " + winner + " has won!"
+    print "\nFINAL BATTLEFIELDS\n"
+    print "Player A's final battlefield:"
+    board_print(board_A)
+    print "\n\nPlayer B's final battlefield:"
+    board_print(board_B)
+
+    print "\n\nThank you for playing!"
     
 if __name__=="__main__":
     main()
