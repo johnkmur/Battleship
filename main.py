@@ -1,28 +1,29 @@
 #! /usr/bin/python
 
-#types of ships
+# Types of ships
 ship_list = {"carrier":5,
               "battleship":4,
              "submarine":3,
              "cruiser":2,
              "destroyer":2}
 
+# Abbreviations for ships that are used in the board.
 ship_abbrev = {"carrier":'C',
               "battleship":'b',
              "submarine":'s',
              "cruiser":'c',
              "destroyer":'d'}
 
+# Player A's ships
 my_ships_A = {}
 
-player_A_ships = 0
-
+# The coordinates of all of Player A's ships
 ship_coordinates_A = []
 
+# Player B's ships
 my_ships_B = {}
 
-player_B_ships = 0
-
+# The coordinates of all of Player B's ships
 ship_coordinates_B = []
 
 # Player A's gameboard, this represents Player A's ship positions and where 
