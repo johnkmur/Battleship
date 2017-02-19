@@ -1,6 +1,9 @@
 #! /usr/bin/python
 
-# Types of ships with there abbreviations as well as length.
+# John Murphy
+# Coatue Coding Challenge
+
+# Types of ships with their abbreviations as well as their length.
 ship_list = {"carrier":['5', 'C'],
               "battleship":['4', 'b'],
              "submarine":['3', 's'],
@@ -35,6 +38,36 @@ board_A_targets = []
 # is was a hit ('H') or a miss ('M').
 board_B_targets = []
 
+# Create the boards used for gameplay
+def create_boards(board_size):
+    for i in range( int(board_size) ):
+        board_row = []
+        for j in range( int(board_size) ):
+            board_row.append('.')
+        board_A.append(board_row)
+
+    for i in range( int(board_size) ):
+        board_row = []
+        for j in range( int(board_size) ):
+            board_row.append('.')
+        board_B.append(board_row)
+
+    for i in range( int(board_size) ):
+        board_row = []
+        for j in range( int(board_size) ):
+            board_row.append('.')
+        board_A_targets.append(board_row)
+
+    for i in range( int(board_size) ):
+        board_row = []
+        for j in range( int(board_size) ):
+            board_row.append('.')
+        board_B_targets.append(board_row)
+
+    return board_A, board_B, board_A_targets, board_B_targets
+
+# This function is used to roughly determine the minimum board size to allow for
+# the placement of the ships that the user selected.
 def determine_min_size(ships):
     max_length = -1
     total_area = 0
@@ -46,6 +79,7 @@ def determine_min_size(ships):
     
     return max_length, total_area
 
+# Returns true if the sink was sunk.
 def is_ship_sunk(coordinates, destination, my_ships):
     x_coor, y_coor = coordinates.split(",")
 
@@ -62,7 +96,7 @@ def is_ship_sunk(coordinates, destination, my_ships):
 
     return False
 
- 
+# Determines if missile hit or missed.
 def fire_at_target(coordinates, source, destination, player_ships, my_ships):
     x_coor, y_coor = coordinates.split(",")
 
@@ -92,15 +126,25 @@ def fire_at_target(coordinates, source, destination, player_ships, my_ships):
         return player_ships
 
 
+# Checks that target is within battlefield dimensions and not visited before.
 def is_valid_target(board_in, coordinates):
     x_coor, y_coor = coordinates.split(",")
 
-    if (int(x_coor) < 0 or int(x_coor) > len(board_in)):
+    if (int(x_coor) < 0 or int(x_coor) > len(board_in)-1):
+        print "Sorry, the coordinate you have entered is not valid, try again."
         return False
-    if (int(y_coor) < 0 or int(y_coor) > len(board_in)):
+
+    if (int(y_coor) < 0 or int(y_coor) > len(board_in)-1):
+        print "Sorry, the coordinate you have entered is not valid, try again."
         return False
+
+    if (board_in[int(x_coor)][int(y_coor)] == 'H' or board_in[int(x_coor)][int(y_coor)] == 'M'):
+        print "Sorry, you have already fired at this location, try again."
+        return False
+
     return True
 
+# Places a Player A's ships onto their board.
 def place_ship_A(start, end, ship):
     x_start, y_start = start.split(",")
     x_end, y_end = end.split(",")
@@ -128,6 +172,7 @@ def place_ship_A(start, end, ship):
     ship_coordinates_A.append(all_coors)
     my_ships_A[ship_list[ship][1]] = ship_coordinates_A
 
+# Places a Player B's ships onto their board.
 def place_ship_B(start, end, ship):
     x_start, y_start = start.split(",")
     x_end, y_end = end.split(",")
@@ -155,6 +200,7 @@ def place_ship_B(start, end, ship):
     ship_coordinates_B.append(all_coors)
     my_ships_B[ship_list[ship][1]] = ship_coordinates_B
 
+# Returns True is a ship can be placed in the given location, False otherwise.
 def is_valid_placement(board_in, ship, start, end):
     x_start, y_start = start.split(",")
     x_end, y_end = end.split(",")
@@ -185,7 +231,6 @@ def is_valid_placement(board_in, ship, start, end):
         move_vertical = True
 
     while (x_min != x_max or y_min != y_max):
-        print board_in[x_min][y_min]
         if (board_in[x_min][y_min] == '.'):
             if (move_vertical == True):
                 y_min = y_min + 1
@@ -195,10 +240,9 @@ def is_valid_placement(board_in, ship, start, end):
             print "\nSorry, this spot is already taken, try again.\n"
             return False
         
-
-
     return True
 
+# Game board print function
 def board_print(board_in):
     board_size_in = len(board_in)
     line = "  "
@@ -265,35 +309,10 @@ def main():
         else:
             good_board_size = True
 
-        
-
     print "\nA battlefield of size " + str(board_size) + "x" + str(board_size) + " will be created."
 
-
-    # Create the gameboard now, call constructor.
-    for i in range( int(board_size) ):
-        board_row = []
-        for j in range( int(board_size) ):
-            board_row.append('.')
-        board_A.append(board_row)
-
-    for i in range( int(board_size) ):
-        board_row = []
-        for j in range( int(board_size) ):
-            board_row.append('.')
-        board_B.append(board_row)
-
-    for i in range( int(board_size) ):
-        board_row = []
-        for j in range( int(board_size) ):
-            board_row.append('.')
-        board_A_targets.append(board_row)
-
-    for i in range( int(board_size) ):
-        board_row = []
-        for j in range( int(board_size) ):
-            board_row.append('.')
-        board_B_targets.append(board_row)
+    # Create the gameboards
+    board_A, board_B, board_A_targets, board_B_targets = create_boards(int(board_size))
 
     # Switch to Player A so that they can place their ships.
     print "Player A will now select where to place their ships, Player B, look away.\n\n"
@@ -310,7 +329,7 @@ def main():
             valid = is_valid_placement(board_A, ship, str(coor_start), str(coor_end))
  
             while (not valid):
-                print "Where would you like to place this ship: " + ship + " (" + ship_list[ship][0] + "x" + sship_list[ship][0] + ")"
+                print "Where would you like to place this ship: " + ship + " (" + ship_list[ship][0] + "x" + ship_list[ship][0] + ")"
                 coor_start = raw_input("Please enter the coordinates (x,y) of the front of the ship: ")
                 coor_end = raw_input("Please enter the coordinates (x,y) of the back of the ship: ")
                 valid = is_valid_placement(board_A, ship, str(coor_start), str(coor_end))
@@ -350,7 +369,6 @@ def main():
     board_print(board_B)
 
     # Now we get into the game play portion.
-
     # Set up players
     player_A_ships = num_ships
     player_B_ships = num_ships
@@ -358,7 +376,6 @@ def main():
     game_over = False
     turn = "A"
     winner = ""
-    # last_move_summary 
 
     while (not game_over):
         # Display the Player's board so that they know how they are doing.
@@ -366,7 +383,7 @@ def main():
             print "\n\nThis is your board \n"
             board_print(board_A)
 
-            print "Now select the coordinate that you want to target on Player B's board."
+            print "\nNow select the coordinate that you want to target on Player B's board.\n"
             board_print(board_A_targets)
 
             target = raw_input("\nWhat coordinate (x,y) would you like to fire at?: ")
@@ -374,8 +391,9 @@ def main():
             valid = is_valid_target(board_A_targets, str(target))
  
             while (not valid):
-                print "\nI am sorry, that spot is not a valid target. Try again.\n"
+                # print "\nI am sorry, that spot is not a valid target. Try again.\n"
                 target = raw_input("\nWhat coordinate (x,y) would you like to fire at?: ")
+                valid = is_valid_target(board_A_targets, str(target))
 
             player_B_ships = fire_at_target(str(target), board_A_targets, board_B, player_B_ships, my_ships_B)
 
@@ -388,7 +406,7 @@ def main():
             print "\n\nThis is your board \n"
             board_print(board_B)
 
-            print "Now select the coordinate that you want to target on Player B's board."
+            print "\nNow select the coordinate that you want to target on Player B's board.\n"
             board_print(board_B_targets)
 
             target = raw_input("\nWhat coordinate (x,y) would you like to fire at?: ")
@@ -396,8 +414,9 @@ def main():
             valid = is_valid_target(board_B_targets, str(target))
  
             while (not valid):
-                print "\nI am sorry, that spot is not a valid target. Try again.\n"
+                # print "\nI am sorry, that spot is not a valid target. Try again.\n"
                 target = raw_input("\nWhat coordinate (x,y) would you like to fire at?: ")
+                valid = is_valid_target(board_B_targets, str(target))
 
             player_A_ships = fire_at_target(str(target), board_B_targets, board_A, player_A_ships, my_ships_A)
 
