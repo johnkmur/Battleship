@@ -15,9 +15,13 @@ ship_abbrev = {"carrier":'C',
 
 my_ships_A = {}
 
+player_A_ships = 0
+
 ship_coordinates_A = []
 
 my_ships_B = {}
+
+player_B_ships = 0
 
 ship_coordinates_B = []
 
@@ -45,21 +49,13 @@ def is_ship_sunk(coordinates, destination, my_ships):
 
     type_of_ship = destination[x_coor][y_coor]
 
-    num_ships = len(my_ships[type_of_ship])
-
-    print my_ships[type_of_ship][0]
-    print num_ships
-    print coordinates
     for i in range( len(my_ships[type_of_ship] )):
         if coordinates in my_ships[type_of_ship][i]:
             my_ships[type_of_ship][i].remove(coordinates)
-            break
+            if (len(my_ships[type_of_ship][i]) == 0):
+                return True;
 
-
-    if (num_ships > len(my_ships[type_of_ship])):
-        return True;
-    else:
-        return False
+    return False
 
  
 def fire_at_target(coordinates, source, destination, player_ships, my_ships):
@@ -72,8 +68,8 @@ def fire_at_target(coordinates, source, destination, player_ships, my_ships):
         # Miss
         destination[x_coor][y_coor] = 'M'
         source[x_coor][y_coor] = 'M'
-
-        return "MISS."
+        print "MISS"
+        return player_ships
 
     else:
         # Hit, check if last missile sunk the ship
@@ -84,9 +80,10 @@ def fire_at_target(coordinates, source, destination, player_ships, my_ships):
 
         if (sunk == True):
             player_ships = player_ships - 1
-            return "HIT and sunk a ship!"
+            print "HIT and sunk a ship!"
         else:
-            return "Target HIT!"
+            print "Target HIT!"
+        return player_ships
 
 
 def is_valid_target(board_in, coordinates):
@@ -205,40 +202,34 @@ def board_print(board_in):
         j = j + 1
 
 def main():
-
     ships = {}
     print "Which ships would you like to play with and how many?"
     print "The ships available are:\nCarrier (5x1)\nBattleship (4x1)\nSubmarine (3x1)\nCruiser (2x1)\nDestroyer (2x1)\n"
 
-    at_least_one_ship = False;
+    num_ships = 0
 
-    while (not at_least_one_ship):
+    while (num_ships == 0):
         ship_number = input("Would you like to play with a Carrier? If so, how many? (Enter 0 if you don't want to use a carrier: ")
-        if (str(ship_number) != 0):
-            at_least_one_ship = True;
         ships["carrier"] = int(ship_number)
+        num_ships = num_ships + int(ship_number)
 
         ship_number = input("Would you like to play with a Battleship? If so, how many? (Enter 0 if you don't want to use a carrier: ")
-        if (str(ship_number) != 0):
-            at_least_one_ship = True;
         ships["battleship"] = int(ship_number)
+        num_ships = num_ships + int(ship_number)
 
         ship_number = input("Would you like to play with a Submarine? If so, how many? (Enter 0 if you don't want to use a carrier: ")
-        if (str(ship_number) != 0):
-            at_least_one_ship = True;
         ships["submarine"] = int(ship_number)
+        num_ships = num_ships + int(ship_number)
 
         ship_number = input("Would you like to play with a Cruiser? If so, how many? (Enter 0 if you don't want to use a carrier: ")
-        if (str(ship_number) != 0):
-            at_least_one_ship = True;
         ships["cruiser"] = int(ship_number)
+        num_ships = num_ships + int(ship_number)
 
         ship_number = input("Would you like to play with a Destroyer? If so, how many? (Enter 0 if you don't want to use a carrier: ")
-        if (str(ship_number) != 0):
-            at_least_one_ship = True;
         ships["destroyer"] = int(ship_number)
+        num_ships = num_ships + int(ship_number)
 
-        if (at_least_one_ship == False):
+        if (num_ships == 0):
             print "You must select at least one ship."
 
     # Determine the minimum size board given the ships selected.
@@ -280,7 +271,7 @@ def main():
         board_B_targets.append(board_row)
 
     # Switch to Player A so that they can place their ships.
-    print "Player A will now select where to place their ships, Player B, look away.\n\n\n\n"
+    print "Player A will now select where to place their ships, Player B, look away.\n\n"
 
     for ship in ships:
         for num in range(ships[ship]):
@@ -308,7 +299,7 @@ def main():
     board_print(board_A)
 
     # Now switch to Player A so that they can place their ships.
-    print "Now Player B will now select where to place their ships, Player A, look away.\n\n\n\n"
+    print "Now Player B will now select where to place their ships, Player A, look away.\n\n"
 
     for ship in ships:
         for num in range(ships[ship]):
@@ -338,8 +329,8 @@ def main():
     # Now we get into the game play portion.
 
     # Set up players
-    player_A_ships = len(ships)
-    player_B_ships = len(ships)
+    player_A_ships = num_ships
+    player_B_ships = num_ships
 
     game_over = False
     turn = "A"
@@ -349,7 +340,7 @@ def main():
     while (not game_over):
         # Display the Player's board so that they know how they are doing.
         if (turn == "A"):
-            print "This is your board \n"
+            print "\n\nThis is your board \n"
             board_print(board_A)
 
             print "Now select the coordinate that you want to target on Player B's board."
@@ -363,9 +354,7 @@ def main():
                 print "\nI am sorry, that spot is not a valid target. Try again.\n"
                 target = raw_input("\nWhat coordinate (x,y) would you like to fire at?: ")
 
-            message = fire_at_target(str(target), board_A_targets, board_B, player_B_ships, my_ships_B)
-
-            print message
+            player_B_ships = fire_at_target(str(target), board_A_targets, board_B, player_B_ships, my_ships_B)
 
             if (player_B_ships == 0):
                 game_over = True
@@ -373,7 +362,7 @@ def main():
             else:
                 turn = "B"
         else:
-            print "This is your board \n"
+            print "\n\nThis is your board \n"
             board_print(board_B)
 
             print "Now select the coordinate that you want to target on Player B's board."
@@ -387,8 +376,7 @@ def main():
                 print "\nI am sorry, that spot is not a valid target. Try again.\n"
                 target = raw_input("\nWhat coordinate (x,y) would you like to fire at?: ")
 
-            message = fire_at_target(str(target), board_B_targets, board_A, player_A_ships, my_ships_A)
-            print message
+            player_A_ships = fire_at_target(str(target), board_B_targets, board_A, player_A_ships, my_ships_A)
 
             if (player_A_ships == 0):
                 game_over = True
@@ -399,7 +387,7 @@ def main():
 
 
 
-    print "winner is " + winner
+    print "\n\nGAME OVER, Player " + winner + " has won!"
     
 if __name__=="__main__":
     main()
