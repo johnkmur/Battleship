@@ -1,18 +1,11 @@
 #! /usr/bin/python
 
-# Types of ships
-ship_list = {"carrier":5,
-              "battleship":4,
-             "submarine":3,
-             "cruiser":2,
-             "destroyer":2}
-
-# Abbreviations for ships that are used in the board.
-ship_abbrev = {"carrier":'C',
-              "battleship":'b',
-             "submarine":'s',
-             "cruiser":'c',
-             "destroyer":'d'}
+# Types of ships with there abbreviations as well as length.
+ship_list = {"carrier":['5', 'C'],
+              "battleship":['4', 'b'],
+             "submarine":['3', 's'],
+             "cruiser":['2', 'c'],
+             "destroyer":['2', 'd']}
 
 # Player A's ships
 my_ships_A = {}
@@ -47,9 +40,9 @@ def determine_min_size(ships):
     total_area = 0
     for ship in ships:
         if (ships[ship] > 0):
-            total_area = total_area + (ships[ship] * ship_list[ship] )
-            if (ship_list[ship] > max_length):
-                max_length = ship_list[ship]
+            total_area = total_area + (ships[ship] * int(ship_list[ship][0]) )
+            if (int(ship_list[ship][0]) > max_length):
+                max_length = int(ship_list[ship][0])
     
     return max_length, total_area
 
@@ -124,16 +117,16 @@ def place_ship_A(start, end, ship):
 
     all_coors = []
     while (x_min != x_max or y_min != y_max):
-        board_A[x_min][y_min] = ship_abbrev[ship]
+        board_A[x_min][y_min] = ship_list[ship][1]
         all_coors.append(str(x_min) + "," + str(y_min))
         if (move_vertical == True):
             y_min = y_min + 1
         else:
             x_min = x_min + 1
-    board_A[x_min][y_min] = ship_abbrev[ship]
+    board_A[x_min][y_min] = ship_list[ship][1]
     all_coors.append(str(x_min) + "," + str(y_min))
     ship_coordinates_A.append(all_coors)
-    my_ships_A[ship_abbrev[ship]] = ship_coordinates_A
+    my_ships_A[ship_list[ship][1]] = ship_coordinates_A
 
 def place_ship_B(start, end, ship):
     x_start, y_start = start.split(",")
@@ -151,16 +144,16 @@ def place_ship_B(start, end, ship):
 
     all_coors = []
     while (x_min != x_max or y_min != y_max):
-        board_B[x_min][y_min] = ship_abbrev[ship]
+        board_B[x_min][y_min] = ship_list[ship][1]
         all_coors.append(str(x_min) + "," + str(y_min))
         if (move_vertical == True):
             y_min = y_min + 1
         else:
             x_min = x_min + 1
-    board_B[x_min][y_min] = ship_abbrev[ship]
+    board_B[x_min][y_min] = ship_list[ship][1]
     all_coors.append(str(x_min) + "," + str(y_min))
     ship_coordinates_B.append(all_coors)
-    my_ships_B[ship_abbrev[ship]] = ship_coordinates_B
+    my_ships_B[ship_list[ship][1]] = ship_coordinates_B
 
 def is_valid_placement(board_in, ship, start, end):
     x_start, y_start = start.split(",")
@@ -181,7 +174,7 @@ def is_valid_placement(board_in, ship, start, end):
     min_diff = min(vertical_diff, horizontal_diff)
     max_diff = max(vertical_diff, horizontal_diff) 
 
-    if ( not (min_diff == 0 and max_diff == ship_list[ship] - 1) ):
+    if ( not (min_diff == 0 and max_diff == int(ship_list[ship][0]) - 1) ):
         # Size of ship doesn't match
         print "\nSorry, that is not the correct dimension of the ship, try again.\n"
         return False
@@ -309,7 +302,7 @@ def main():
         for num in range(ships[ship]):
             # Print board_A
             board_print(board_A)
-            print "Where would you like to place this ship: " + ship + " (" + str(ship_list[ship]) + "x" + str(ship_list[ship]) + ")"
+            print "Where would you like to place this ship: " + ship + " (" + ship_list[ship][0] + "x" + ship_list[ship][0] + ")"
             coor_start = raw_input("Please enter the coordinates (x,y) of the front of the ship: ")
             coor_end = raw_input("Please enter the coordinates (x,y) of the back of the ship: ")
 
@@ -317,7 +310,7 @@ def main():
             valid = is_valid_placement(board_A, ship, str(coor_start), str(coor_end))
  
             while (not valid):
-                print "Where would you like to place this ship: " + ship + " (" + str(ship_list[ship]) + "x" + str(ship_list[ship]) + ")"
+                print "Where would you like to place this ship: " + ship + " (" + ship_list[ship][0] + "x" + sship_list[ship][0] + ")"
                 coor_start = raw_input("Please enter the coordinates (x,y) of the front of the ship: ")
                 coor_end = raw_input("Please enter the coordinates (x,y) of the back of the ship: ")
                 valid = is_valid_placement(board_A, ship, str(coor_start), str(coor_end))
@@ -337,7 +330,7 @@ def main():
 
             # Print board_A
             board_print(board_B)
-            print "Where would you like to place this ship: " + ship + " (" + str(ship_list[ship]) + "x" + str(ship_list[ship]) + ")"
+            print "Where would you like to place this ship: " + ship + " (" + ship_list[ship][0] + "x" + ship_list[ship][0] + ")"
             coor_start = raw_input("Please enter the coordinates (x,y) of the front of the ship: ")
             coor_end = raw_input("Please enter the coordinates (x,y) of the back of the ship: ")
 
@@ -345,7 +338,7 @@ def main():
             valid = is_valid_placement(board_B, ship, str(coor_start), str(coor_end))
  
             while (not valid):
-                print "Where would you like to place this ship: " + ship + " (" + str(ship_list[ship]) + "x" + str(ship_list[ship]) + ")"
+                print "Where would you like to place this ship: " + ship + " (" + ship_list[ship][0] + "x" + ship_list[ship][0] + ")"
                 coor_start = raw_input("Please enter the coordinates (x,y) of the front of the ship: ")
                 coor_end = raw_input("Please enter the coordinates (x,y) of the back of the ship: ")
 
