@@ -41,6 +41,17 @@ board_A_targets = []
 # is was a hit ('H') or a miss ('M').
 board_B_targets = []
 
+def determine_min_size(ships):
+    max_length = -1
+    total_area = 0
+    for ship in ships:
+        if (ships[ship] > 0):
+            total_area = total_area + (ships[ship] * ship_list[ship] )
+            if (ship_list[ship] > max_length):
+                max_length = ship_list[ship]
+    
+    return max_length, total_area
+
 def is_ship_sunk(coordinates, destination, my_ships):
     x_coor, y_coor = coordinates.split(",")
 
@@ -83,6 +94,7 @@ def fire_at_target(coordinates, source, destination, player_ships, my_ships):
             print "HIT and sunk a ship!"
         else:
             print "Target HIT!"
+
         return player_ships
 
 
@@ -158,6 +170,10 @@ def is_valid_placement(board_in, ship, start, end):
     y_min = min( int(y_start), int(y_end))
     y_max = max( int(y_start), int(y_end))
 
+    if (x_min < 0 or y_min < 0 or x_max > len(board_in) - 1 or y_max > len(board_in) - 1):
+        print "\nSorry, please choose coordinates within the battlefield\n"
+        return False
+
     vertical_diff = y_max - y_min
     horizontal_diff = x_max - x_min
 
@@ -166,6 +182,7 @@ def is_valid_placement(board_in, ship, start, end):
 
     if ( not (min_diff == 0 and max_diff == ship_list[ship] - 1) ):
         # Size of ship doesn't match
+        print "\nSorry, that is not the correct dimension of the ship, try again.\n"
         return False
 
     move_vertical = False
@@ -173,13 +190,17 @@ def is_valid_placement(board_in, ship, start, end):
         # We are moving vertically
         move_vertical = True
 
-    while (x_min != x_max and y_min != y_max):
-        if (board[x_min][y_min] != '.'):
-            return False
-        if (move_vertical == True):
-            y_min = y_min + 1
+    while (x_min != x_max or y_min != y_max):
+        print board_in[x_min][y_min]
+        if (board_in[x_min][y_min] == '.'):
+            if (move_vertical == True):
+                y_min = y_min + 1
+            else:
+                x_min = x_min + 1
         else:
-            x_min = x_min + 1
+            print "\nSorry, this spot is already taken, try again.\n"
+            return False
+        
 
 
     return True
@@ -233,14 +254,24 @@ def main():
             print "You must select at least one ship."
 
     # Determine the minimum size board given the ships selected.
+    max_length, total_area = determine_min_size(ships)
     
-
     print "\n"
     board_size = input("Enter the dimensions (Ex. type '10' if you want a 10x10 board) that you would like to play on: ")
 
     while ( int(board_size) < 1):
-        print "Error, dimensions must be greater than one"
-        board_size = input("Enter dimensions again: ")
+            print "Error, dimensions must be greater than one"
+            board_size = input("Enter dimensions again: ")
+
+    good_board_size = False
+    while (not good_board_size):
+        if ( (int(board_size) * int(board_size)) < total_area or int(board_size) < max_length):
+            print "Given the number of ships and type of ships that you entered, the battlefield needs to be larger"
+            board_size = input("Enter dimensions again: ")
+        else:
+            good_board_size = True
+
+        
 
     print "\nA battlefield of size " + str(board_size) + "x" + str(board_size) + " will be created."
 
@@ -275,7 +306,6 @@ def main():
 
     for ship in ships:
         for num in range(ships[ship]):
-
             # Print board_A
             board_print(board_A)
             print "Where would you like to place this ship: " + ship + " (" + str(ship_list[ship]) + "x" + str(ship_list[ship]) + ")"
@@ -286,10 +316,10 @@ def main():
             valid = is_valid_placement(board_A, ship, str(coor_start), str(coor_end))
  
             while (not valid):
-                print "\nI am sorry, that spot is already taken by another ship.\n"
                 print "Where would you like to place this ship: " + ship + " (" + str(ship_list[ship]) + "x" + str(ship_list[ship]) + ")"
                 coor_start = raw_input("Please enter the coordinates (x,y) of the front of the ship: ")
                 coor_end = raw_input("Please enter the coordinates (x,y) of the back of the ship: ")
+                valid = is_valid_placement(board_A, ship, str(coor_start), str(coor_end))
 
 
             place_ship_A(str(coor_start), str(coor_end), ship)
@@ -314,7 +344,6 @@ def main():
             valid = is_valid_placement(board_B, ship, str(coor_start), str(coor_end))
  
             while (not valid):
-                print "\nI am sorry, that spot is already taken by another ship.\n"
                 print "Where would you like to place this ship: " + ship + " (" + str(ship_list[ship]) + "x" + str(ship_list[ship]) + ")"
                 coor_start = raw_input("Please enter the coordinates (x,y) of the front of the ship: ")
                 coor_end = raw_input("Please enter the coordinates (x,y) of the back of the ship: ")
@@ -383,9 +412,6 @@ def main():
                 winner = turn
             else:
                 turn = "A"
-
-
-
 
     print "\n\nGAME OVER, Player " + winner + " has won!"
     
